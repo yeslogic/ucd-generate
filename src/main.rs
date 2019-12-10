@@ -28,6 +28,7 @@ mod util;
 mod writer;
 
 mod age;
+mod bidi_class;
 mod case_folding;
 mod general_category;
 mod brk;
@@ -50,6 +51,9 @@ fn main() {
 fn run() -> Result<()> {
     let matches = app::app().get_matches();
     match matches.subcommand() {
+        ("bidi-class", Some(m)) => {
+            bidi_class::command(ArgMatches::new(m))
+        }
         ("general-category", Some(m)) => {
             general_category::command(ArgMatches::new(m))
         }
