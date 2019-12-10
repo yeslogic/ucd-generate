@@ -32,6 +32,7 @@ mod case_folding;
 mod general_category;
 mod brk;
 mod jamo_short_name;
+mod joining_type;
 mod names;
 mod property_bool;
 mod regex;
@@ -70,6 +71,9 @@ fn run() -> Result<()> {
         }
         ("jamo-short-name", Some(m)) => {
             jamo_short_name::command(ArgMatches::new(m))
+        }
+        ("joining-type", Some(m)) => {
+            joining_type::command(ArgMatches::new(m))
         }
         ("names", Some(m)) => {
             names::command(ArgMatches::new(m))
