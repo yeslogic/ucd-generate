@@ -29,6 +29,7 @@ mod writer;
 
 mod age;
 mod bidi_class;
+mod bidi_mirroring_glyph;
 mod case_folding;
 mod case_mapping;
 mod general_category;
@@ -53,6 +54,9 @@ fn main() {
 fn run() -> Result<()> {
     let matches = app::app().get_matches();
     match matches.subcommand() {
+        ("bidi-mirroring-glyph", Some(m)) => {
+            bidi_mirroring_glyph::command(ArgMatches::new(m))
+        }
         ("bidi-class", Some(m)) => {
             bidi_class::command(ArgMatches::new(m))
         }
