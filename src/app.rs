@@ -120,6 +120,13 @@ to codepoint. When codepoints are mapped according to this table, then case
 differences (according to Unicode) are eliminated.
 ";
 
+const ABOUT_CASE_MAPPING: &'static str = "\
+case-mapping emits three tables that map code points to their lowercase,
+uppercase, and titlecase equivalents. This is includes simple
+(single codepoint) mappings from UnicodeData.txt as well as multi-codepoint
+unconditional mappings from SpecialCasing.txt.
+";
+
 const ABOUT_GRAPHEME_CLUSTER_BREAK: &'static str = "\
 grapheme-cluster-break emits the table of property values and their
 corresponding codepoints for the Grapheme_Cluster_Break property.
@@ -406,6 +413,15 @@ pub fn app() -> App<'static, 'static> {
              .long("all-pairs")
              .help("Emit a table where each codepoint includes all possible \
                     Simple mappings."));
+    let cmd_case_mapping = SubCommand::with_name("case-mapping")
+        .author(crate_authors!())
+        .version(crate_version!())
+        .template(TEMPLATE_SUB)
+        .about("Create single and multi-codepoint case mapping tables.")
+        .before_help(ABOUT_CASE_MAPPING)
+        .arg(flag_name("CASE_MAPPING"))
+        .arg(ucd_dir.clone())
+        .arg(flag_chars.clone());
     let cmd_grapheme_cluster_break =
         SubCommand::with_name("grapheme-cluster-break")
         .author(crate_authors!())
@@ -521,6 +537,7 @@ pub fn app() -> App<'static, 'static> {
         .subcommand(cmd_property_names)
         .subcommand(cmd_property_values)
         .subcommand(cmd_case_folding_simple)
+        .subcommand(cmd_case_mapping)
         .subcommand(cmd_grapheme_cluster_break)
         .subcommand(cmd_word_break)
         .subcommand(cmd_sentence_break)
