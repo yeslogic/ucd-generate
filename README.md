@@ -1,5 +1,6 @@
 yeslogic-ucd-generate
-============
+=====================
+
 A command line tool to generate Unicode tables in Rust source code. Tables
 can typically be generated in one of three formats: a sorted sequence of
 character ranges, a
@@ -25,7 +26,6 @@ version:
 * `bidi-mirroring-glyph` sub-command
 * Support for generating Bidi_Class tables
 * Support for generating Joining_Type tables
-* Support for parsing ArabicShaping.txt to `ucd-parse`
 * Option to generate `general-category` as a Rust `enum`
 * Option to generate a Rust `enum` for script
 * `case-mapping` command

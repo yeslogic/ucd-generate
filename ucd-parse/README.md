@@ -1,15 +1,28 @@
-ucd-parse
-=========
+yeslogic-ucd-parse
+==================
+
 A library for parsing Unicode Character Database (UCD) files into structured
 data.
 
-[![Linux build status](https://api.travis-ci.org/BurntSushi/ucd-generate.png)](https://travis-ci.org/BurntSushi/ucd-generate)
-[![](http://meritbadge.herokuapp.com/ucd-generate)](https://crates.io/crates/ucd-parse)
+<div align="center">
+  <a href="https://travis-ci.com/yeslogic/ucd-generate">
+    <img src="https://travis-ci.com/yeslogic/ucd-generate.svg" alt="Build Status"></a>
+  <a href="https://crates.io/crates/yeslogic-ucd-parse">
+    <img src="https://img.shields.io/crates/v/yeslogic-ucd-parse.svg" alt="Version">
+  </a>
+</div>
 
+<br>
+
+This version of `ucd-parse` adds the following on top of BurntSushi's
+version:
+
+* Support for parsing `ArabicShaping.txt`
+* Support for parsing `BidiMirroring.txt`
 
 ### Documentation
 
-https://docs.rs/ucd-parse
+https://docs.rs/yeslogic-ucd-parse
 
 
 ### License
