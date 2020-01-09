@@ -97,7 +97,7 @@ pub fn command(args: ArgMatches) -> Result<()> {
     // Process unassigned codepoints
     let left_to_right_name = bidi_class_name("L")?;
     let boundary_neutral_name = bidi_class_name("BN")?;
-    for cp in 0..(0x10FFFF + 1) {
+    for cp in 0..=0x10FFFF {
         if !assigned.contains(&cp) {
             // Check if this code point is in the default Bidi classes
             if let Some(class) = lookup_unassigned(cp, &default_class_assignments) {
