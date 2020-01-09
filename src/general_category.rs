@@ -39,7 +39,7 @@ pub fn command(args: ArgMatches) -> Result<()> {
         .canonical("gc", "unassigned")?
         .to_string();
     bycat.insert(unassigned_name.clone(), BTreeSet::new());
-    for cp in 0..(0x10FFFF + 1) {
+    for cp in 0..=0x10FFFF {
         if !assigned.contains(&cp) {
             bycat.get_mut(&unassigned_name).unwrap().insert(cp);
         }
