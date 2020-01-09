@@ -1,16 +1,22 @@
 [package]
-name = "ucd-parse"
+name = "yeslogic-ucd-parse"
 version = "0.1.4"  #:version
-authors = ["Andrew Gallant <jamslam@gmail.com>"]
+authors = [
+  "Andrew Gallant <jamslam@gmail.com>",
+  "YesLogic Pty. Ltd. <info@yeslogic.com>"
+]
 description = """
 A library for parsing data files in the Unicode character database.
 """
-documentation = "https://docs.rs/ucd-parse"
-homepage = "https://github.com/BurntSushi/ucd-generate"
-repository = "https://github.com/BurntSushi/ucd-generate"
+documentation = "https://docs.rs/yeslogic-ucd-parse"
+homepage = "https://github.com/yeslogic/ucd-generate"
+repository = "https://github.com/yeslogic/ucd-generate"
 readme = "README.md"
 keywords = ["unicode", "database", "character", "property"]
 license = "MIT/Apache-2.0"
+
+[badges]
+travis-ci = { repository = "yeslogic/ucd-generate" }
 
 [dependencies]
 lazy_static = "1"
