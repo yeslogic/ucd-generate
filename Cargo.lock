@@ -178,12 +178,12 @@ dependencies = [
  "regex-automata 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "ucd-trie 0.1.2",
  "ucd-util 0.1.5",
- "yeslogic-ucd-parse 0.1.4",
+ "yeslogic-ucd-parse 0.1.5",
 ]
 
 [[package]]
 name = "yeslogic-ucd-parse"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "lazy_static 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "regex 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
