@@ -1,6 +1,6 @@
 [package]
 name = "yeslogic-ucd-generate"
-version = "0.2.3"  #:version
+version = "0.3.0"  #:version
 authors = [
   "Andrew Gallant <jamslam@gmail.com>",
   "YesLogic Pty. Ltd. <info@yeslogic.com>"
