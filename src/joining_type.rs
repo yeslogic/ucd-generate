@@ -45,7 +45,7 @@ pub fn command(args: ArgMatches) -> Result<()> {
             })
         })
         .collect::<Result<Vec<_>>>()?;
-    for cp in 0..(0x10FFFF + 1) {
+    for cp in 0..=0x10FFFF {
         if !assigned.contains(&cp) {
             // See if the code point is in any of the general categories that map to
             // the Transparent joining type. Otherwise add to the Non_Joining type.
