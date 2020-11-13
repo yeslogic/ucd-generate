@@ -1,5 +1,6 @@
-ucd-generate
-============
+yeslogic-ucd-generate
+=====================
+
 A command line tool to generate Unicode tables in Rust source code. Tables
 can typically be generated in one of three formats: a sorted sequence of
 character ranges, a
@@ -9,8 +10,20 @@ This tool also supports serializing regular expressions as DFAs using the
 [regex-automata](https://github.com/BurntSushi/regex-automata)
 crate.
 
-[![Build status](https://github.com/BurntSushi/ucd-generate/workflows/ci/badge.svg)](https://github.com/BurntSushi/ucd-generate/actions)
-[![](http://meritbadge.herokuapp.com/ucd-generate)](https://crates.io/crates/ucd-generate)
+<div align="center">
+  <a href="https://travis-ci.com/yeslogic/ucd-generate">
+    <img src="https://travis-ci.com/yeslogic/ucd-generate.svg" alt="Build Status"></a>
+  <a href="https://crates.io/crates/yeslogic-ucd-generate">
+    <img src="https://img.shields.io/crates/v/yeslogic-ucd-generate.svg" alt="Version">
+  </a>
+</div>
+
+<br>
+
+This version of `ucd-generate` adds the following on top of BurntSushi's
+version:
+
+* `joining-group` sub-command
 
 
 ### Installation
@@ -19,8 +32,8 @@ Since this is mostly intended as a developer tool for use while writing Rust
 programs, the principle method of installation is from crates.io:
 
 ```
-$ cargo install ucd-generate
-ucd-generate --help
+$ cargo install yeslogic-ucd-generate
+yeslogic-ucd-generate --help
 ```
 
 
