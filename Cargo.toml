@@ -27,7 +27,7 @@ members = ["ucd-parse", "ucd-trie", "ucd-util"]
 [[bin]]
 bench = false
 path = "src/main.rs"
-name = "ucd-generate"
+name = "yeslogic-ucd-generate"
 
 [dependencies]
 byteorder = "1"
