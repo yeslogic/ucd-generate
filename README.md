@@ -23,8 +23,10 @@ crate.
 This version of `ucd-generate` adds the following on top of BurntSushi's
 version:
 
-* `joining-group` sub-command
-
+* `joining-group` sub-command.
+  [#32](https://github.com/BurntSushi/ucd-generate/pull/32)
+* Bug fix for generation of title case mapping table in `case-mapping`
+  sub-command. [#40](https://github.com/BurntSushi/ucd-generate/pull/40)
 
 ### Installation
 
