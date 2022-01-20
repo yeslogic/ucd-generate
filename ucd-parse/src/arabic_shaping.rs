@@ -27,6 +27,9 @@ pub struct ArabicShaping {
     pub joining_group: JoiningGroup,
 }
 
+// NOTE: The JoiningType and JoiningGroup enums are generated from the values in
+// PropertyValueAliases.txt
+
 /// The Joining_Group field read from ArabicShaping.txt
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum JoiningGroup {
@@ -124,6 +127,8 @@ pub enum JoiningGroup {
     TehMarbuta,
     TehMarbutaGoal,
     Teth,
+    ThinYeh,
+    VerticalTail,
     Waw,
     Yeh,
     YehBarree,
@@ -242,6 +247,8 @@ impl JoiningGroup {
             JoiningGroup::TehMarbuta => "Teh_Marbuta",
             JoiningGroup::TehMarbutaGoal => "Teh_Marbuta_Goal",
             JoiningGroup::Teth => "Teth",
+            JoiningGroup::ThinYeh => "Thin_Yeh",
+            JoiningGroup::VerticalTail => "Vertical_Tail",
             JoiningGroup::Waw => "Waw",
             JoiningGroup::Yeh => "Yeh",
             JoiningGroup::YehBarree => "Yeh_Barree",
@@ -355,6 +362,8 @@ impl FromStr for JoiningGroup {
             "Teh_Marbuta" => Ok(JoiningGroup::TehMarbuta),
             "Teh_Marbuta_Goal" => Ok(JoiningGroup::TehMarbutaGoal),
             "Teth" => Ok(JoiningGroup::Teth),
+            "Thin_Yeh" => Ok(JoiningGroup::ThinYeh),
+            "Vertical_Tail" => Ok(JoiningGroup::VerticalTail),
             "Waw" => Ok(JoiningGroup::Waw),
             "Yeh" => Ok(JoiningGroup::Yeh),
             "Yeh_Barree" => Ok(JoiningGroup::YehBarree),
