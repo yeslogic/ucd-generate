@@ -1208,12 +1208,32 @@ impl Writer {
             )?;
             writeln!(self.wtr, "//")?;
         }
-        writeln!(
-            self.wtr,
-            "// ucd-generate {} is available on crates.io.",
-            env!("CARGO_PKG_VERSION")
-        )?;
+        self.ucd_version()?;
         self.wrote_header = true;
+        Ok(())
+    }
+
+    fn ucd_version(&mut self) -> Result<()> {
+        let revision = option_env!("UCD_GENERATE_REVISION");
+        let version = env!("CARGO_PKG_VERSION");
+        match revision {
+            Some(rev) => {
+                writeln!(
+                    self.wtr,
+                    "// yeslogic-ucd-generate is available on GitHub:",
+                )?;
+                writeln!(
+                    self.wtr,
+                    "// https://github.com/yeslogic/ucd-generate/tree/{}",
+                    rev
+                )
+            }
+            None => writeln!(
+                self.wtr,
+                "// yeslogic-ucd-generate {} is available on crates.io.",
+                revision.unwrap_or(version)
+            ),
+        }?;
         Ok(())
     }
 
