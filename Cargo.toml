@@ -18,9 +18,6 @@ license = "MIT/Apache-2.0"
 categories = ["text-processing", "internationalization"]
 edition = "2018"
 
-[badges]
-travis-ci = { repository = "yeslogic/ucd-generate" }
-
 [workspace]
 members = ["ucd-parse", "ucd-trie", "ucd-util"]
 
