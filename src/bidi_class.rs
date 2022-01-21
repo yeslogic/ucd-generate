@@ -7,7 +7,7 @@ use crate::error::Result;
 use crate::util::{print_property_values, PropertyValues};
 
 // Bidi Class (listing UnicodeData.txt, field 4: see UAX #44:
-// http://www.unicode.org/reports/tr44/) Unlike other properties, unassigned
+// https://www.unicode.org/reports/tr44/) Unlike other properties, unassigned
 // code points in blocks reserved for right-to-left scripts are given either
 // types R or AL.
 //
@@ -140,6 +140,8 @@ pub fn command(args: ArgMatches<'_>) -> Result<()> {
     } else if args.is_present("rust-enum") {
         let variants = by_type.keys().map(String::as_str).collect::<Vec<_>>();
         wtr.ranges_to_rust_enum(args.name(), &variants, &by_type)?;
+    } else if args.is_present("combined") {
+        wtr.ranges_to_combined(args.name(), &by_type)?;
     } else {
         wtr.names(by_type.keys())?;
         for (name, set) in by_type {

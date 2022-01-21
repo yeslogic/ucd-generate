@@ -330,6 +330,24 @@ impl Writer {
         Ok(())
     }
 
+    /// Write a map that combines codepoint ranges into a single table.
+    ///
+    /// The given map should be a map from the variant value to the set of
+    /// codepoints that have that value.
+    pub fn ranges_to_combined(
+        &mut self,
+        name: &str,
+        enum_map: &BTreeMap<String, BTreeSet<u32>>,
+    ) -> Result<()> {
+        let mut set = BTreeSet::new();
+        for other_set in enum_map.values() {
+            set.extend(other_set.iter().cloned());
+        }
+        self.ranges(name, &set)?;
+        self.wtr.flush()?;
+        Ok(())
+    }
+
     /// Write a map that associates codepoint ranges to a single value in a
     /// Rust enum with custom discriminants.
     ///
@@ -860,7 +878,7 @@ impl Writer {
         File::create(fst_file_path)?.write_all(&fst.to_vec())?;
 
         let ty = if map { "Map" } else { "Set" };
-        writeln!(self.wtr, "lazy_static! {{")?;
+        writeln!(self.wtr, "lazy_static::lazy_static! {{")?;
         writeln!(
             self.wtr,
             "  pub static ref {}: ::fst::{}<&'static [u8]> = ",
@@ -1053,7 +1071,7 @@ impl Writer {
         file_name_fwd: &str,
         file_name_rev: &str,
     ) -> Result<()> {
-        writeln!(self.wtr, "lazy_static! {{")?;
+        writeln!(self.wtr, "lazy_static::lazy_static! {{")?;
         writeln!(
             self.wtr,
             "  pub static ref {}: ::regex_automata::{} = {{",
@@ -1086,7 +1104,7 @@ impl Writer {
         align_to: &str,
         file_name: &str,
     ) -> Result<()> {
-        writeln!(self.wtr, "lazy_static! {{")?;
+        writeln!(self.wtr, "lazy_static::lazy_static! {{")?;
         writeln!(
             self.wtr,
             "  pub static ref {}: ::regex_automata::{} = {{",
