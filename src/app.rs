@@ -568,7 +568,11 @@ pub fn app() -> App<'static, 'static> {
         .arg(Arg::with_name("all-pairs").long("all-pairs").help(
             "Emit a table where each codepoint includes all possible \
              Simple mappings.",
+        ))
+        .arg(Arg::with_name("rust-match").long("rust-match").help(
+            "Emit a function that uses a match to map between codepoints.",
         ));
+
     let cmd_case_mapping = SubCommand::with_name("case-mapping")
         .author(clap::crate_authors!())
         .version(clap::crate_version!())

@@ -46,6 +46,8 @@ pub fn command(args: ArgMatches<'_>) -> Result<()> {
         table_all = exhaustive;
     }
 
+    let output_match = args.is_present("rust-match");
+
     if args.is_present("circular") {
         let mut equiv = BTreeMap::new();
         let mut seen = BTreeSet::new();
@@ -65,9 +67,15 @@ pub fn command(args: ArgMatches<'_>) -> Result<()> {
                 cur = v;
             }
         }
-        wtr.codepoint_to_codepoint(args.name(), &equiv)?;
+        if output_match {
+            wtr.codepoint_to_codepoint_fn(args.name(), &equiv)?;
+        } else {
+            wtr.codepoint_to_codepoint(args.name(), &equiv)?;
+        }
     } else if args.is_present("all-pairs") {
         wtr.multi_codepoint_to_codepoint(args.name(), &table_all)?;
+    } else if output_match {
+        wtr.codepoint_to_codepoint_fn(args.name(), &table)?;
     } else {
         wtr.codepoint_to_codepoint(args.name(), &table)?;
     }
