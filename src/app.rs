@@ -570,7 +570,8 @@ pub fn app() -> App<'static, 'static> {
              Simple mappings.",
         ))
         .arg(Arg::with_name("rust-match").long("rust-match").help(
-            "Emit a function that uses a match to map between codepoints.",
+            "Emit a function that uses a match to map between codepoints. \
+            Ignored when all-pairs is specified.",
         ));
 
     let cmd_case_mapping = SubCommand::with_name("case-mapping")
