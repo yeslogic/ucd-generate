@@ -1,5 +1,5 @@
 [package]
-version = "0.1.8"  #:version
+version = "0.1.10"  #:version
 name = "yeslogic-ucd-parse"
 authors = [
   "Andrew Gallant <jamslam@gmail.com>",
@@ -13,14 +13,11 @@ homepage = "https://github.com/yeslogic/ucd-generate"
 repository = "https://github.com/yeslogic/ucd-generate"
 readme = "README.md"
 keywords = ["unicode", "database", "character", "property"]
-license = "MIT/Apache-2.0"
+license = "MIT OR Apache-2.0"
 edition = "2018"
 
-[badges]
-travis-ci = { repository = "yeslogic/ucd-generate" }
-
 [dependencies]
-lazy_static = "1"
+once_cell = "1"
 
 [dependencies.regex]
 version = "1"

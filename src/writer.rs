@@ -330,24 +330,6 @@ impl Writer {
         Ok(())
     }
 
-    /// Write a map that combines codepoint ranges into a single table.
-    ///
-    /// The given map should be a map from the variant value to the set of
-    /// codepoints that have that value.
-    pub fn ranges_to_combined(
-        &mut self,
-        name: &str,
-        enum_map: &BTreeMap<String, BTreeSet<u32>>,
-    ) -> Result<()> {
-        let mut set = BTreeSet::new();
-        for other_set in enum_map.values() {
-            set.extend(other_set.iter().cloned());
-        }
-        self.ranges(name, &set)?;
-        self.wtr.flush()?;
-        Ok(())
-    }
-
     /// Write a map that associates codepoint ranges to a single value in a
     /// Rust enum with custom discriminants.
     ///
@@ -388,6 +370,24 @@ impl Writer {
             map.iter().map(|(&k, &v)| (k, rust_type_name(v))),
         );
         self.ranges_to_enum_slice(name, &enum_name, &ranges)?;
+        self.wtr.flush()?;
+        Ok(())
+    }
+
+    /// Write a map that combines codepoint ranges into a single table.
+    ///
+    /// The given map should be a map from the variant value to the set of
+    /// codepoints that have that value.
+    pub fn ranges_to_combined(
+        &mut self,
+        name: &str,
+        enum_map: &BTreeMap<String, BTreeSet<u32>>,
+    ) -> Result<()> {
+        let mut set = BTreeSet::new();
+        for other_set in enum_map.values() {
+            set.extend(other_set.iter().cloned());
+        }
+        self.ranges(name, &set)?;
         self.wtr.flush()?;
         Ok(())
     }
@@ -656,6 +656,7 @@ impl Writer {
         &mut self,
         name: &str,
         map: &BTreeMap<u32, BTreeSet<u32>>,
+        emit_flat_table: bool,
     ) -> Result<()> {
         if self.opts.fst_dir.is_some() {
             return err!("cannot emit codepoint multimaps as an FST");
@@ -666,7 +667,7 @@ impl Writer {
             let vs2 = vs.iter().cloned().collect();
             map2.insert(k, vs2);
         }
-        self.codepoint_to_codepoints(name, &map2)
+        self.codepoint_to_codepoints(name, &map2, emit_flat_table)
     }
 
     /// Write a map that associates codepoints with a sequence of other
@@ -677,6 +678,7 @@ impl Writer {
         &mut self,
         name: &str,
         map: &BTreeMap<u32, Vec<u32>>,
+        emit_flat_table: bool,
     ) -> Result<()> {
         if self.opts.fst_dir.is_some() {
             return err!("cannot emit codepoint->codepoints map as an FST");
@@ -687,11 +689,19 @@ impl Writer {
 
         let name = rust_const_name(name);
         let ty = self.rust_codepoint_type();
-        writeln!(
-            self.wtr,
-            "pub const {}: &'static [({}, &'static [{}])] = &[",
-            name, ty, ty
-        )?;
+        if !emit_flat_table {
+            writeln!(
+                self.wtr,
+                "pub const {}: &'static [({}, &'static [{}])] = &[",
+                name, ty, ty
+            )?;
+        } else {
+            writeln!(
+                self.wtr,
+                "pub const {}: &'static [({}, [{}; 3])] = &[",
+                name, ty, ty
+            )?;
+        }
         'LOOP: for (&k, vs) in map {
             // Make sure both our keys and values can be represented in the
             // user's chosen codepoint format.
@@ -699,15 +709,43 @@ impl Writer {
                 None => continue 'LOOP,
                 Some(k) => k,
             };
+
+            let (padded_vs, slice_prefix) = if emit_flat_table {
+                // These checks are for future-proofing and cannot be hit currently.
+                if vs.len() > 3 {
+                    return err!(
+                        "flat-table representation cannot be used when value \
+                         arrays may contain more than 3 entries"
+                    );
+                }
+                let flat_padding =
+                    if self.opts.char_literals { 0 } else { !0 };
+                if vs.contains(&flat_padding) {
+                    return err!(
+                        "flat-table --chars representation cannot be used when \
+                         the NUL character is present in the value array. (This \
+                         error probably can be fixed by removing `--chars`)"
+                    );
+                }
+                let res = vs
+                    .iter()
+                    .copied()
+                    .chain(std::iter::repeat(flat_padding))
+                    .take(3)
+                    .collect::<Vec<_>>();
+                (res, "")
+            } else {
+                (vs.clone(), "&")
+            };
             let mut vstrs = vec![];
-            for &v in vs {
+            for v in padded_vs {
                 match self.rust_codepoint(v) {
                     None => continue 'LOOP,
                     Some(v) => vstrs.push(v),
                 }
             }
 
-            self.wtr.write_str(&format!("({}, &[", kstr))?;
+            self.wtr.write_str(&format!("({}, {}[", kstr, slice_prefix))?;
             if vstrs.len() == 1 {
                 self.wtr.write_str(&format!("{}", &vstrs[0]))?;
             } else {
@@ -878,19 +916,19 @@ impl Writer {
         File::create(fst_file_path)?.write_all(&fst.to_vec())?;
 
         let ty = if map { "Map" } else { "Set" };
-        writeln!(self.wtr, "lazy_static::lazy_static! {{")?;
         writeln!(
             self.wtr,
-            "  pub static ref {}: ::fst::{}<&'static [u8]> = ",
+            "pub static {}: ::once_cell::sync::Lazy<::fst::{}<&'static [u8]>> =",
             const_name, ty
         )?;
+        writeln!(self.wtr, "  ::once_cell::sync::Lazy::new(|| {{")?;
         writeln!(self.wtr, "    ::fst::{}::from(::fst::raw::Fst::new(", ty)?;
         writeln!(
             self.wtr,
-            "      &include_bytes!({:?})[..]).unwrap());",
+            "      &include_bytes!({:?})[..]).unwrap())",
             fst_file_name
         )?;
-        writeln!(self.wtr, "}}")?;
+        writeln!(self.wtr, "  }});")?;
         Ok(())
     }
 
@@ -1071,12 +1109,12 @@ impl Writer {
         file_name_fwd: &str,
         file_name_rev: &str,
     ) -> Result<()> {
-        writeln!(self.wtr, "lazy_static::lazy_static! {{")?;
         writeln!(
             self.wtr,
-            "  pub static ref {}: ::regex_automata::{} = {{",
+            "pub static {}: ::once_cell::sync::Lazy<::regex_automata::{}> =",
             const_name, full_regex_ty
         )?;
+        writeln!(self.wtr, "  ::once_cell::sync::Lazy::new(|| {{")?;
 
         writeln!(self.wtr, "    let fwd =")?;
         self.write_dfa_deserialize(short_dfa_ty, align_to, file_name_fwd)?;
@@ -1090,8 +1128,7 @@ impl Writer {
             self.wtr,
             "    ::regex_automata::Regex::from_dfas(fwd, rev)"
         )?;
-        writeln!(self.wtr, "  }};")?;
-        writeln!(self.wtr, "}}")?;
+        writeln!(self.wtr, "  }});")?;
 
         Ok(())
     }
@@ -1104,15 +1141,14 @@ impl Writer {
         align_to: &str,
         file_name: &str,
     ) -> Result<()> {
-        writeln!(self.wtr, "lazy_static::lazy_static! {{")?;
         writeln!(
             self.wtr,
-            "  pub static ref {}: ::regex_automata::{} = {{",
+            "pub static {}: ::once_cell::sync::Lazy<::regex_automata::{}> =",
             const_name, full_dfa_ty
         )?;
+        writeln!(self.wtr, "  ::once_cell::sync::Lazy::new(|| {{")?;
         self.write_dfa_deserialize(short_dfa_ty, align_to, file_name)?;
-        writeln!(self.wtr, "  }};")?;
-        writeln!(self.wtr, "}}")?;
+        writeln!(self.wtr, "  }});")?;
 
         Ok(())
     }
@@ -1250,6 +1286,12 @@ impl Writer {
     fn rust_codepoint(&self, cp: u32) -> Option<String> {
         if self.opts.char_literals {
             char::from_u32(cp).map(|c| format!("{:?}", c))
+        } else if cp == !0 {
+            // Used to represent missing entries in some cases (specifically
+            // --flat-table), and writing it as `!0` makes the whole table much
+            // easier to read while maintaining identical semantics, even if
+            // `--flat-table` is not in use.
+            Some("!0".to_string())
         } else {
             Some(cp.to_string())
         }

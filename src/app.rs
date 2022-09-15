@@ -42,14 +42,14 @@ bidi-class produces one table of Unicode codepoint ranges for each
 possible Bidi_Class value.
 ";
 
-const ABOUT_GENERAL_CATEGORY: &'static str = "\
-general-category produces one table of Unicode codepoint ranges for each
-possible General_Category value.
-";
-
 const ABOUT_CANONICAL_COMBINING_CLASS: &'static str = "\
 canonical-combining-class produces one table of Unicode codepoint ranges for
 each possible Canonical_Combining_Class value.
+";
+
+const ABOUT_GENERAL_CATEGORY: &'static str = "\
+general-category produces one table of Unicode codepoint ranges for each
+possible General_Category value.
 ";
 
 const ABOUT_SCRIPT: &'static str = "\
@@ -195,6 +195,12 @@ pub fn app() -> App<'static, 'static> {
          cannot be written as a character literal, then it is \
          silently dropped.",
     );
+    let flag_combined = Arg::with_name("combined").long("combined").help(
+        "Emit a single table with all included codepoint ranges. You might \
+        want to use this option when checking if characters belong to a \
+        subset of categories, since only one table will need to be checked. \
+        Searching the combined table should be simpler and more efficient.",
+    );
     let flag_short_names = Arg::with_name("short-names")
         .long("short-names")
         .help("Use the abbreviated property names in generated files.");
@@ -206,16 +212,17 @@ pub fn app() -> App<'static, 'static> {
         .long("fst-dir")
         .help("Emit the table as a FST in Rust source code.")
         .takes_value(true);
+    let flag_flat_table =
+        Arg::with_name("flat-table").long("flat-table").help(
+            "When emitting a map of a single codepoint to multiple \
+             codepoints, emit entries as `(u32, [u32; 3])` instead of as \
+             `(u32, &[u32])` (replacing `u32` with `char` if `--chars` is \
+             passed). Conceptually unoccupied indices of the array will \
+             contain `!0u32` (for u32) or `\\u{0}` (for `char`).",
+        );
     let ucd_dir = Arg::with_name("ucd-dir")
         .required(true)
         .help("Directory containing the Unicode character database files.");
-    let flag_combined = Arg::with_name("combined").long("combined").help(
-        "Emit a single table with all included codepoint ranges. You might \
-        want to use this option when checking if characters belong to a \
-        subset of categories, since only one table will need to be checked. \
-        Searching the combined table should be simpler and more efficient.",
-    );
-
     // Subcommands.
     let cmd_bidi_class = SubCommand::with_name("bidi-class")
         .author(clap::crate_authors!())
@@ -258,6 +265,30 @@ pub fn app() -> App<'static, 'static> {
             .arg(Arg::with_name("rust-match").long("rust-match").help(
                 "Emit a function that uses a match to map between codepoints.",
             ));
+    let cmd_canonical_combining_class =
+        SubCommand::with_name("canonical-combining-class")
+            .author(clap::crate_authors!())
+            .version(clap::crate_version!())
+            .template(TEMPLATE_SUB)
+            .about("Create the Canonical_Combining_Class table.")
+            .before_help(ABOUT_CANONICAL_COMBINING_CLASS)
+            .arg(ucd_dir.clone())
+            .arg(flag_fst_dir.clone())
+            .arg(flag_name("CANONICAL_COMBINING_CLASS"))
+            .arg(flag_chars.clone())
+            .arg(flag_trie_set.clone())
+            .arg(Arg::with_name("enum").long("enum").help(
+                "Emit a single table that maps codepoints to canonical \
+                 combining class.",
+            ))
+            .arg(Arg::with_name("rust-enum").long("rust-enum").help(
+                "Emit a Rust enum and a table that maps codepoints to \
+                 canonical combining class.",
+            ))
+            .arg(Arg::with_name("list-classes").long("list-classes").help(
+                "List all of the canonical combining class names with \
+                 abbreviations.",
+            ));
     let cmd_general_category = SubCommand::with_name("general-category")
         .author(clap::crate_authors!())
         .version(clap::crate_version!())
@@ -292,30 +323,6 @@ pub fn app() -> App<'static, 'static> {
                 .long("list-categories")
                 .help("List all of the category names with abbreviations."),
         );
-    let cmd_canonical_combining_class =
-        SubCommand::with_name("canonical-combining-class")
-            .author(clap::crate_authors!())
-            .version(clap::crate_version!())
-            .template(TEMPLATE_SUB)
-            .about("Create the Canonical_Combining_Class table.")
-            .before_help(ABOUT_CANONICAL_COMBINING_CLASS)
-            .arg(ucd_dir.clone())
-            .arg(flag_fst_dir.clone())
-            .arg(flag_name("CANONICAL_COMBINING_CLASS"))
-            .arg(flag_chars.clone())
-            .arg(flag_trie_set.clone())
-            .arg(Arg::with_name("enum").long("enum").help(
-                "Emit a single table that maps codepoints to canonical \
-                 combining class.",
-            ))
-            .arg(Arg::with_name("rust-enum").long("rust-enum").help(
-                "Emit a Rust enum and a table that maps codepoints to \
-                 canonical combining class.",
-            ))
-            .arg(Arg::with_name("list-classes").long("list-classes").help(
-                "List all of the canonical combining class names with \
-                 abbreviations.",
-            ));
     let cmd_script = SubCommand::with_name("script")
         .author(clap::crate_authors!())
         .version(clap::crate_version!())
@@ -572,13 +579,16 @@ pub fn app() -> App<'static, 'static> {
         .arg(Arg::with_name("rust-match").long("rust-match").help(
             "Emit a function that uses a match to map between codepoints. \
             Ignored when all-pairs is specified.",
-        ));
-
+        ))
+        .arg(flag_flat_table.clone().requires("all-pairs"));
     let cmd_case_mapping = SubCommand::with_name("case-mapping")
         .author(clap::crate_authors!())
         .version(clap::crate_version!())
         .template(TEMPLATE_SUB)
-        .about("Create unconditional case mapping tables for upper, lower and title case.")
+        .about(
+            "Create unconditional case mapping tables for \
+             upper, lower and title case.",
+        )
         .before_help(ABOUT_CASE_MAPPING)
         .arg(flag_name("CASE_MAPPING"))
         .arg(ucd_dir.clone())
@@ -587,7 +597,8 @@ pub fn app() -> App<'static, 'static> {
             "Only emit the simple case mapping tables \
              (emit maps of codepoint to codepoint, \
              ignoring rules from SpecialCasing.txt)",
-        ));
+        ))
+        .arg(flag_flat_table.clone().conflicts_with("simple"));
 
     let cmd_grapheme_cluster_break =
         SubCommand::with_name("grapheme-cluster-break")
@@ -700,8 +711,8 @@ pub fn app() -> App<'static, 'static> {
         .max_term_width(100)
         .setting(AppSettings::UnifiedHelpMessage)
         .subcommand(cmd_bidi_class)
-        .subcommand(cmd_general_category)
         .subcommand(cmd_canonical_combining_class)
+        .subcommand(cmd_general_category)
         .subcommand(cmd_script)
         .subcommand(cmd_script_extension)
         .subcommand(cmd_joining_group)
