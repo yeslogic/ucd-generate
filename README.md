@@ -11,8 +11,8 @@ This tool also supports serializing regular expressions as DFAs using the
 crate.
 
 <div align="center">
-  <a href="https://app.travis-ci.com/github/yeslogic/ucd-generate">
-    <img src="https://app.travis-ci.com/yeslogic/ucd-generate.svg?branch=master" alt="Build Status"></a>
+  <a href="https://github.com/yeslogic/ucd-generate/actions/workflows/ci.yml">
+    <img src="https://github.com/yeslogic/ucd-generate/actions/workflows/ci.yml/badge.svg" alt="Build Status"></a>
   <a href="https://crates.io/crates/yeslogic-ucd-generate">
     <img src="https://img.shields.io/crates/v/yeslogic-ucd-generate.svg" alt="Version">
   </a>
