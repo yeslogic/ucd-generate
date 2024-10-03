@@ -27,6 +27,7 @@ pub struct ArabicShaping {
 
 // NOTE: The JoiningType and JoiningGroup enums are generated from the values in
 // PropertyValueAliases.txt
+// awk -F ';' '/^jg ;/ { name = $3; gsub("_", "", name); sub("[[:space:]]*$", "", name); printf("%s,\n", name) }' ucd-16.0.0/PropertyValueAliases.txt
 
 /// The Joining_Group field read from ArabicShaping.txt
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -58,6 +59,7 @@ pub enum JoiningGroup {
     Heth,
     Kaf,
     Kaph,
+    KashmiriYeh,
     Khaph,
     KnottedHeh,
     Lam,
@@ -178,6 +180,7 @@ impl JoiningGroup {
             JoiningGroup::Heth => "Heth",
             JoiningGroup::Kaf => "Kaf",
             JoiningGroup::Kaph => "Kaph",
+            JoiningGroup::KashmiriYeh => "Kashmiri_Yeh",
             JoiningGroup::Khaph => "Khaph",
             JoiningGroup::KnottedHeh => "Knotted_Heh",
             JoiningGroup::Lam => "Lam",
@@ -293,6 +296,7 @@ impl std::str::FromStr for JoiningGroup {
             "Heth" => Ok(JoiningGroup::Heth),
             "Kaf" => Ok(JoiningGroup::Kaf),
             "Kaph" => Ok(JoiningGroup::Kaph),
+            "Kashmiri_Yeh" => Ok(JoiningGroup::KashmiriYeh),
             "Khaph" => Ok(JoiningGroup::Khaph),
             "Knotted_Heh" => Ok(JoiningGroup::KnottedHeh),
             "Lam" => Ok(JoiningGroup::Lam),
