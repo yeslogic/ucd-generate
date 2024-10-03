@@ -54,25 +54,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ucd-generate"
-version = "0.3.1"
-dependencies = [
- "clap",
- "fst",
- "once_cell",
- "ucd-parse",
- "ucd-trie",
- "ucd-util",
-]
-
-[[package]]
-name = "ucd-parse"
-version = "0.1.13"
-dependencies = [
- "regex-lite",
-]
-
-[[package]]
 name = "ucd-trie"
 version = "0.1.7"
 dependencies = [
@@ -88,3 +69,22 @@ name = "unicode-width"
 version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c0edd1e5b14653f783770bce4a4dabb4a5108a5370a5f5d8cfe8710c361f6c8b"
+
+[[package]]
+name = "yeslogic-ucd-generate"
+version = "0.6.0"
+dependencies = [
+ "clap",
+ "fst",
+ "once_cell",
+ "ucd-trie",
+ "ucd-util",
+ "yeslogic-ucd-parse",
+]
+
+[[package]]
+name = "yeslogic-ucd-parse"
+version = "0.1.13"
+dependencies = [
+ "regex-lite",
+]
