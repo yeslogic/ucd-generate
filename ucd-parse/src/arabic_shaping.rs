@@ -259,7 +259,7 @@ impl JoiningGroup {
     }
 }
 
-impl FromStr for JoiningGroup {
+impl std::str::FromStr for JoiningGroup {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<JoiningGroup, Error> {
