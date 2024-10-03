@@ -31,7 +31,6 @@ mod joining_group;
 mod joining_type;
 mod names;
 mod property_bool;
-mod regex;
 mod script;
 
 fn main() {
@@ -89,8 +88,6 @@ fn run() -> Result<()> {
         }
         ("word-break", Some(m)) => brk::word(ArgMatches::new(m)),
         ("sentence-break", Some(m)) => brk::sentence(ArgMatches::new(m)),
-        ("dfa", Some(m)) => regex::command_dfa(ArgMatches::new(m)),
-        ("regex", Some(m)) => regex::command_regex(ArgMatches::new(m)),
         ("test-unicode-data", Some(m)) => {
             cmd_test_unicode_data(ArgMatches::new(m))
         }
