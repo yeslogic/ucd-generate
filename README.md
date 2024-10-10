@@ -22,8 +22,10 @@ version:
 
 * `joining-group` sub-command.
   [#32](https://github.com/BurntSushi/ucd-generate/pull/32)
-* `canonical-combining-class` sub-command.
-  [#45](https://github.com/BurntSushi/ucd-generate/pull/45)
+
+Upstream README follows:
+
+----
 
 ### Installation
 
