@@ -1,18 +1,23 @@
-ucd-parse
-=========
+yeslogic-ucd-parse
+==================
+
 A library for parsing Unicode Character Database (UCD) files into structured
-data.
+data. YesLogic fork.
 
-[![Build status](https://github.com/BurntSushi/ucd-generate/workflows/ci/badge.svg)](https://github.com/BurntSushi/ucd-generate/actions)
-[![crates.io](https://img.shields.io/crates/v/ucd-parse.svg)](https://crates.io/crates/ucd-parse)
+<div align="center">
+  <a href="https://github.com/yeslogic/ucd-generate/actions/workflows/ci.yml">
+    <img src="https://github.com/yeslogic/ucd-generate/actions/workflows/ci.yml/badge.svg" alt="Build Status"></a>
+  <a href="https://crates.io/crates/yeslogic-ucd-parse">
+    <img src="https://img.shields.io/crates/v/yeslogic-ucd-parse.svg" alt="Version">
+  </a>
+</div>
 
 
-### Documentation
+## Documentation
 
-https://docs.rs/ucd-parse
+https://docs.rs/yeslogic-ucd-parse
 
-
-### License
+## License
 
 This project is licensed under either of
  * Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or
