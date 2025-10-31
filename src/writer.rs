@@ -126,10 +126,10 @@ impl Writer {
         let ty = if self.opts.fst_dir.is_some() {
             "::fst::Set<&'static [u8]>".to_string()
         } else if self.opts.trie_set {
-            "&'static ::ucd_trie::TrieSet".to_string()
+            "&::ucd_trie::TrieSet".to_string()
         } else {
             let charty = self.rust_codepoint_type();
-            format!("&'static [({}, {})]", charty, charty)
+            format!("&[({}, {})]", charty, charty)
         };
 
         let mut names: Vec<String> =
@@ -138,7 +138,7 @@ impl Writer {
 
         writeln!(
             self.wtr,
-            "pub const BY_NAME: &'static [(&'static str, {})] = &[",
+            "pub const BY_NAME: &[(&'static str, {})] = &[",
             ty,
         )?;
         for name in names {
@@ -188,11 +188,7 @@ impl Writer {
         table: &[(u32, u32)],
     ) -> Result<()> {
         let ty = self.rust_codepoint_type();
-        writeln!(
-            self.wtr,
-            "pub const {}: &'static [({}, {})] = &[",
-            name, ty, ty
-        )?;
+        writeln!(self.wtr, "pub const {}: &[({}, {})] = &[", name, ty, ty)?;
         for &(start, end) in table {
             let range = (self.rust_codepoint(start), self.rust_codepoint(end));
             if let (Some(start), Some(end)) = range {
@@ -207,7 +203,7 @@ impl Writer {
         let trie = trie.as_slice();
         writeln!(
             self.wtr,
-            "pub const {}: &'static ::ucd_trie::TrieSet = \
+            "pub const {}: &::ucd_trie::TrieSet = \
              &::ucd_trie::TrieSet {{",
             name
         )?;
@@ -258,7 +254,7 @@ impl Writer {
 
         writeln!(
             self.wtr,
-            "pub const {}_ENUM: &'static [&'static str] = &[",
+            "pub const {}_ENUM: &[&'static str] = &[",
             rust_const_name(name)
         )?;
         for variant in enum_map.keys() {
@@ -387,7 +383,7 @@ impl Writer {
 
         writeln!(
             self.wtr,
-            "pub const {}: &'static [({}, {}, {})] = &[",
+            "pub const {}: &[({}, {}, {})] = &[",
             name, cp_ty, cp_ty, enum_ty,
         )?;
         for (start, end, variant) in table {
@@ -447,7 +443,7 @@ impl Writer {
 
         writeln!(
             self.wtr,
-            "pub const {}: &'static [({}, {}, {})] = &[",
+            "pub const {}: &[({}, {}, {})] = &[",
             name, cp_ty, cp_ty, num_ty
         )?;
         for &(start, end, num) in table {
@@ -480,7 +476,7 @@ impl Writer {
         let name = rust_const_name(name);
         writeln!(
             self.wtr,
-            "pub const {}: &'static [(&'static str, &'static str)] = &[",
+            "pub const {}: &[(&'static str, &'static str)] = &[",
             name
         )?;
         for (k, v) in map {
@@ -512,7 +508,7 @@ impl Writer {
         let name = rust_const_name(name);
         writeln!(
             self.wtr,
-            "pub const {}: &'static \
+            "pub const {}: &\
              [(&'static str, \
              &'static [(&'static str, &'static str)])] = &[",
             name
@@ -674,13 +670,13 @@ impl Writer {
         if !emit_flat_table {
             writeln!(
                 self.wtr,
-                "pub const {}: &'static [({}, &'static [{}])] = &[",
+                "pub const {}: &[({}, &'static [{}])] = &[",
                 name, ty, ty
             )?;
         } else {
             writeln!(
                 self.wtr,
-                "pub const {}: &'static [({}, [{}; 3])] = &[",
+                "pub const {}: &[({}, [{}; 3])] = &[",
                 name, ty, ty
             )?;
         }
@@ -785,7 +781,7 @@ impl Writer {
         let ty = self.rust_codepoint_type();
         writeln!(
             self.wtr,
-            "pub const {}: &'static [({}, &'static str)] = &[",
+            "pub const {}: &[({}, &'static str)] = &[",
             name, ty
         )?;
         for &(cp, ref s) in table {
@@ -831,7 +827,7 @@ impl Writer {
         let ty = self.rust_codepoint_type();
         writeln!(
             self.wtr,
-            "pub const {}: &'static [(&'static str, {})] = &[",
+            "pub const {}: &[(&'static str, {})] = &[",
             name, ty
         )?;
         for &(ref s, cp) in table {
@@ -874,11 +870,7 @@ impl Writer {
         name: &str,
         table: &[(&str, u64)],
     ) -> Result<()> {
-        writeln!(
-            self.wtr,
-            "pub const {}: &'static [(&'static str, u64)] = &[",
-            name
-        )?;
+        writeln!(self.wtr, "pub const {}: &[(&'static str, u64)] = &[", name)?;
         for &(ref s, n) in table {
             self.wtr.write_str(&format!("({:?}, {}), ", s, n))?;
         }
